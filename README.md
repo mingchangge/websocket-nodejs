@@ -1,6 +1,6 @@
 ### websocket-nodejs创建步骤
 
-- 创建项目根目录，
+- 创建项目根目录websocket-nodejs
 - 在该目录下初始化 Node.js 项目`npm init -y`,这将创建一个 `package.json` 文件，它是 Node.js 项目的配置文件
 - npm install ws
 - 在项目根目录下创建 server 文件夹，用于存放后端代码。
@@ -16,7 +16,7 @@
 ### 项目的目录结构如下：
 
 ```explain
-websocket-demo/
+websocket-nodejs/
 ├── .vscode/
 │   ├── settings.json
 ├── frontend/
