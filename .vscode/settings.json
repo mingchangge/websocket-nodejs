@@ -1,0 +1,15 @@
+{
+  "editor.formatOnSave": true, // 保存时格式化
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // 设为默认格式化器
+  "prettier.requireConfig": true, // 要求配置文件
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[html]": {
+    "editor.formatOnSave": true
+  }
+  // 添加其他需要格式化的文件类型...
+}

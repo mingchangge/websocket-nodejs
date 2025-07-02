@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WebSocket 聊天示例</title>
+        <style>
+            #chat-box {
+                width: 400px;
+                height: 400px;
+                border: 1px solid #ccc;
+                padding: 10px;
+                overflow-y: auto;
+                margin-bottom: 10px;
+                font-family: Arial, sans-serif;
+            }
+
+            #message-input {
+                width: 300px;
+                padding: 8px;
+                margin-right: 5px;
+            }
+
+            #send-btn {
+                padding: 8px 15px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            #send-btn:hover {
+                background-color: #45a049;
+            }
+
+            .system-message {
+                color: #888;
+                font-style: italic;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div style="max-width: 420px; margin: 20px auto;">
+            <h1 style="text-align: center;">WebSocket 聊天室</h1>
+            <div id="chat-box"></div>
+            <div style="display: flex;">
+                <input type="text" id="message-input" placeholder="输入消息...">
+                <button id="send-btn">发送</button>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+
+            // 获取 DOM 元素
+            const chatBox = document.getElementById('chat-box');
+            const messageInput = document.getElementById('message-input');
+            const sendBtn = document.getElementById('send-btn');
+
+            // WebSocket 服务器地址，这里连接到本地运行的 Node.js WebSocket 服务器
+            const wsServerUrl = 'ws://localhost:8080';
+
+            // 创建 WebSocket 连接
+            const socket = new WebSocket(wsServerUrl);
+
+            // 监听 WebSocket 连接打开事件
+            socket.addEventListener('open', function (event) {
+                addToChatBox('<span class="system-message">系统消息: 连接到 WebSocket 服务器</span>');
+            });
+
+            // 监听 WebSocket 消息接收事件
+            socket.addEventListener('message', function (event) {
+                // 检查消息类型，如果是 Blob，则转换为字符串
+                if (event.data instanceof Blob) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const messageString = e.target.result;
+                        console.log('收到的消息（字符串）:', messageString);
+                        // 将消息显示在聊天框中
+                        addToChatBox(messageString);
+                    };
+                    reader.readAsText(event.data); // 读取 Blob 并转换为字符串
+                } else {
+                    console.log('收到的消息（其他类型）:', event.data);
+                    // 直接显示消息
+                    addToChatBox(event.data);
+                }
+            });
+
+            // 监听 WebSocket 连接关闭事件
+            socket.addEventListener('close', function (event) {
+                addToChatBox('<span class="system-message">系统消息: 连接已关闭</span>');
+            });
+
+            // 监听 WebSocket 错误事件
+            socket.addEventListener('error', function (event) {
+                addToChatBox('<span class="system-message">系统消息: 发生错误</span>');
+                console.error('WebSocket Error:', event);
+            });
+
+            // 添加消息到聊天框的函数
+            function addToChatBox(message) {
+                const p = document.createElement('p');
+                p.innerHTML = message;
+                chatBox.appendChild(p);
+                // 滚动到聊天框底部
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            // 发送消息按钮点击事件
+            sendBtn.addEventListener('click', sendMessage);
+
+            // 发送消息函数
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (message) {
+                    // 发送消息
+                    socket.send(message);
+                    // 清空输入框
+                    messageInput.value = '';
+                }
+            }
+
+            // 按下回车键发送消息
+            messageInput.addEventListener('keypress', function (event) {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        </script>
+    </body>
+
+</html>
